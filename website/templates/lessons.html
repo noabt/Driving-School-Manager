@@ -1,0 +1,153 @@
+{% extends "base.html" %} {% block title %}Lessons{% endblock %} {% block content
+%}
+   <style>
+        body{
+              background-color:#a8cda8;
+        }
+
+        .headline {
+      font-size: 36px;
+      color: black;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 20px;
+      font-family: "Tahoma", sans-serif; /* Use your preferred font family */
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Optional text shadow for visual effect */
+    }
+
+        }
+    .my-input {
+      background-color: #30ba8f;
+      color: black;
+    }
+
+    .table__cell {
+    text-align: center;
+   }
+
+
+    </style>
+    <link rel="stylesheet" href="/static/table.css">
+
+  <h1 class="headline">Lesson List</h1>
+        <input type="hidden" name="student_id" value="{{student.student_id}}">
+        <div style="display: inline-block; margin-left: 10px;">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#mymodal{{ student.student_id }}">Add Lesson</button>
+        </div>
+    <br><br>
+  <div style="display: inline-block; margin-right: 20px; margin-left: 15px;">
+  <form action="/lessons/searchByDate" method="post">
+    <label for="search-date"><b>Search by Date:</b></label>
+    <input type="text" class="btn btn-success" id="search-date" name="search-date" required>
+    <input type="submit" class="btn btn-success" value="Search">
+  </form>
+  </div>
+
+    <div>
+    <table class="table">
+      <thead class="table__header">
+        <tr>
+            <th>Student's id</th>
+            <th>Student's name</th>
+            <th>Address</th>
+            <th>Time & Date</th>
+            <th>Lesson Length</th>
+            <th>Action</th>
+        </tr>
+      </thead>
+    {% for les in lessons %}
+    <tbody class="table__row">
+    <tr class="table__row">
+        <td class="table__cell text-center">{{ les.student_id }}</td>
+        <td class="table__cell text-center">{{ les.student_name }}</td>
+        <td class="table__cell text-center">{{ les.address }}</td>
+        <td class="table__cell text-center">{{ les.time_date }}</td>
+        <td class="table__cell text-center">{{ les.length }}</td>
+        <td class="text-center">
+            <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit">Edit</a>
+            <a href="/delete/{{student.student_id}}/{{ les.lesson_id }}" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure You Want To Delete?')" data-target="#modaledit">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+
+
+
+        <!--Edit Lesson Modal-->
+<div id="modaledit" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Information</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/updateLesson" method="post">
+                    <input type="hidden" name="student_id" value="{{student.student_id}}">
+                    <div class="form-group">
+                        <label>Address:</label>
+                        <input type="hidden" name="id" value="{{les.lesson_id}}">
+                        <input type="text" class="form-control" id="addressE" name="address" required="1" value="{{les.address}}">
+                    </div>
+                    <div class="form-group">
+                        <label>Time & Date:</label>
+                        <input type="datetime-local" class="form-control" id="timedateE" name="timedate" required="1" value="{{les.time_date}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="lengthE">Lesson Length:</label>
+                        <select id="lengthE" name="length">
+                            <option value="1">1H</option>
+                            <option value="1.5">1.5H</option>
+                            <option value="2">2H</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input class="btn btn-primary" type="submit" value="Update">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+    </table>
+    </div>
+
+        <!--Add Lesson Modal-->
+<div id="mymodal{{ student.student_id }}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Lesson</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/lessons/addLesson/{{ student.student_id }}" method="post">
+                    <input type="hidden" name="student_id" value="{{student.student_id}}">
+                    <div class="form-group">
+                        <label>Time & Date:</label>
+                        <input type="datetime-local" class="form-control" id="timedate" name="timedate" required="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="length">Lesson Length:</label>
+                        <select id="length" name="length">
+                            <option value="1">1H</option>
+                            <option value="1.5">1.5H</option>
+                            <option value="2">2H</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input class="btn btn-primary" type="submit" value="Add">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

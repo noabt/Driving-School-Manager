@@ -1,0 +1,234 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+   <style>
+        body{
+              background-color:#a8cda8;
+        }
+
+        }
+    .my-input {
+      background-color: #30ba8f;
+      color: black;
+    }
+
+    .headline {
+      font-size: 36px;
+      color: black;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 20px;
+      font-family: "Tahoma", sans-serif; /* Use your preferred font family */
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Optional text shadow for visual effect */
+    }
+
+    .modal-wide {
+      max-width: 800px; /* Adjust the width as needed */
+      margin: 0 auto; /* Center the modal horizontally */
+    }
+    </style>
+    <link rel="stylesheet" href="/static/table.css">
+
+  <h1 class="headline">Student List</h1>
+        <div style="display: inline-block; margin-left: 10px;">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#mymodal">Add Student</button>
+        </div>
+        <div style="display: inline-block; margin-left: 10px;">
+            <a href="/todayLessons" class="btn btn-success btn-xs" data-toggle="modal" data-target="#modaltoday">Today's Lessons</a>
+        </div>
+    <br><br>
+  <div style="display: inline-block; margin-right: 20px; margin-left: 15px;">
+  <form action="/homePage/searchById" method="post">
+    <label for="search-id"><b>Search by ID:</b></label>
+    <input type="text" class="btn btn-success" id="search-id" name="search-id" required>
+    <input type="submit" class="btn btn-success" value="Search">
+  </form>
+</div>
+
+<div style="display: inline-block;">
+  <form action="/homePage/searchByName" method="post">
+    <label for="search-name"><b>Search by Name:</b></label>
+    <input type="text" class="btn btn-success" id="search-name" name="search-name" required>
+    <input type="submit" class="btn btn-success" value="Search">
+  </form>
+</div>
+
+    <div>
+    <table class="table">
+      <thead class="table__header">
+        <tr>
+            <th>Student's id</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Gear</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+      </thead>
+    {% for row in rows %}
+        <tbody class="table__row">
+        <tr class="table__row">
+            <td class="table__cell text-center">{{ row.student_id }}</td>
+            <td class="table__cell text-center">{{ row.name }}</td>
+            <td class="table__cell text-center">{{ row.phone }}</td>
+            <td class="table__cell text-center">{{ row.address }}</td>
+            <td class="table__cell text-center">{{ row.gear }}</td>
+            <td class="table__cell text-center">{{ row.status }}</td>
+            <td class="table__cell text-center">
+                <a href="/update/{{ row.student_id }}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{ row.student_id }}">Edit</a>
+                <a href="/delete/{{row.student_id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure You Want To Delete?')" data-target="#modaledit">Delete</a>
+                <a href="/lessons/{{ row.student_id }}" class="btn btn-success btn-xs" id="lessons" data-student-id="{{ row }}">Watch Lesson List</a>
+            </td>
+        </tr>
+        </tbody>
+
+
+        <!--Edit Student Modal-->
+<div id="modaledit{{ row.student_id }}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Information</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{{url_for('views.update_student')}}" method="post">
+                    <div class="form-group">
+                        <label>Id:</label>
+                        <input type="hidden" name="id" value="{{row.student_id}}">
+                        <input type="text" class="form-control" id="idE" name="student_id" required="1" value="{{row.student_id}}">
+                    </div>
+                    <div class="form-group">
+                        <label>Name:</label>
+                        <input type="text" class="form-control" id="nameE" name="name" required="1" value="{{row.name}}">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone:</label>
+                        <input type="text" class="form-control" id="phoneE" name="phone" required="1" value="{{row.phone}}">
+                    </div>
+                    <div class="form-group">
+                        <label>Address:</label>
+                        <input type="text" class="form-control" id="addressE" name="address" required="1" value="{{row.address}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="gear">Gear:</label>
+                        <select id="gearE" name="gear">
+                            <option value="manual">Manual</option>
+                            <option value="automatic">Automatic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select id="statusE" name="status">
+                            <option value="lessons">In Lessons</option>
+                            <option value="internal">Internal Test</option>
+                            <option value="external">External Test</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input class="btn btn-primary" type="submit" value="Update">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+    </table>
+    </div>
+
+        <!--Add Student Modal-->
+<div id="mymodal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Student</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/add_student" method="post">
+                    <div class="form-group">
+                        <label>Id:</label>
+                        <input type="text" class="form-control" id="id" name="id" required="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Name:</label>
+                        <input type="text" class="form-control" id="name" name="name" required="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone:</label>
+                        <input type="text" class="form-control" id="phone" name="phone" required="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Address:</label>
+                        <input type="text" class="form-control" id="address" name="address" required="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="gear">Gear:</label>
+                        <select id="gear" name="gear">
+                            <option value="manual">Manual</option>
+                            <option value="automatic">Automatic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select id="status" name="status">
+                            <option value="lessons">In Lessons</option>
+                            <option value="internal">Internal Test</option>
+                            <option value="external">External Test</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input class="btn btn-primary" type="submit" value="Add">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Today Lessons Modal-->
+<div id="modaltoday" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-wide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">What Do We Have Today?</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table" align="center">
+                    <thead class="table__header">
+                        <tr>
+                            <th>Student's name</th>
+                            <th>Address</th>
+                            <th>Time & Date</th>
+                            <th>Lesson Length</th>
+                        </tr>
+                    </thead>
+                  {% for row in today %}
+                    <tbody class="table__row">
+                        <tr class="table__row">
+                            <td class="table__cell text-center">{{ row.student_name }}</td>
+                            <td class="table__cell text-center">{{ row.address }}</td>
+                            <td class="table__cell text-center">{{ row.time_date }}</td>
+                            <td class="table__cell text-center">{{ row.length }}</td>
+                        </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block content
+%}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url("https://www.thermofisher.com/blog/wp-content/uploads/sites/7/2016/06/istock_48003904_road-1.jpg");
+
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+    }
+
+    .container h2 {
+      text-align: center;
+    }
+
+    .container label, .container input[type="text"], .container input[type="email"], .container input[type="password"], .container input[type="submit"] {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .container input[type="submit"] {
+      padding: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .container input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Sign Up</h2>
+    <form action="/sign-up" method="POST">
+      <label for="first_name">First Name:</label>
+      <input type="text" id="first_name" name="first_name" placeholder="Enter First Name" required>
+
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" placeholder="Enter Username" required>
+
+      <label for="password">Password:</label>
+      <input type="text" id="password" name="password" placeholder="Enter Password" required>
+
+      <label for="password2">Password (Confirm)</label>
+      <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password"/>
+
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+  </div>
+{% endblock %}
+
+

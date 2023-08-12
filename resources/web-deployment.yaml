@@ -1,0 +1,54 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  labels:
+    app: web-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-deploy
+  template:
+    metadata:
+      labels:
+        app: web-deploy
+    spec:
+      containers:
+      - name: web-container
+        image: web-app:v0.0
+        ports:
+        - containerPort: 3000
+        env:
+          - name: HOST
+            value: mysql
+          - name: PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: web-secret
+                key: PASSWORD
+          - name: PORT
+            value: "3306"
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: web-secret
+                key: PASSWORD
+
+---          
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  type: ClusterIP
+  selector:
+    app: web-deploy
+  ports:
+    - protocol: TCP
+      port: 3000  # The port exposed by the service
+      targetPort: 3000  # The port your application listens on
+
+

@@ -5,10 +5,10 @@ networks:
       config:
         - subnet: 172.211.1.0/24
 
-        
+version: '3'   
 services:
   web:
-    image: testapp:2
+    image: web-app:v0.0
     ports:
       - "3000:3000"
     expose:

@@ -17,12 +17,18 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: web-app:v0.0
+        image: docker.io/noabt/myapp:final
         ports:
         - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /
+            port : 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10  
         env:
           - name: HOST
-            value: mysql
+            value: mysql-service 
           - name: PASSWORD
             valueFrom:
               secretKeyRef:

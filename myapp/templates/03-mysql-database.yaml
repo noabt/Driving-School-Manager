@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
+  name: {{ .Values.mysql.name }}
 spec:
   serviceName: mysql
-  replicas: 1
+  replicas: {{ .Values.mysql.replicaCount }}
   selector:
     matchLabels:
       app: mysql
@@ -15,18 +15,21 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:v0.0
+        image: {{ .Values.mysql.image.repository }}
         env:
-          - name: PASSWORD
+          - name: MYSQL_ROOT_PASSWORD 
             valueFrom:
               secretKeyRef:
-                name: web-secretclea
+                name: {{ .Values.mysql.secretName }}
                 key: PASSWORD
         ports:
-        - containerPort: 3306
+        - containerPort: {{ .Values.mysql.containerPort }} 
         volumeMounts:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
+        - name: {{ .Values.mysql.configmapName }}
+          mountPath: /docker-entrypoint-initdb.d
+          readOnly: true
   volumeClaimTemplates:
   - metadata:
       name: mysql-persistent-storage
@@ -34,7 +37,14 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 5Gi  # Adjust the storage size as needed
+          storage: 5Gi
+  - metadata:
+      name: mysql-init-config  
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Mi
 
 ---
 
@@ -49,3 +59,5 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
+
+

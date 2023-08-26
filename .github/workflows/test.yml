@@ -30,6 +30,9 @@ jobs:
           # Run Docker Compose locally again
           docker-compose up -d
 
+          # Wait for a moment to let containers start
+          sleep 5
+
           # Test if the app is running by making a request to localhost:3000
           response_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
 

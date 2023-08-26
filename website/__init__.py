@@ -4,6 +4,7 @@ from flask_login import LoginManager
 import os
 from os import path
 
+app = Flask(__name__)
 db = SQLAlchemy()
 
 def create_app():
@@ -13,7 +14,6 @@ def create_app():
     db_user = os.getenv('DB_USER', 'root')
     db_name = os.getenv('DB_NAME', 'dsm')
 
-    app = Flask(__name__)
     app.config['SECRET_KEY'] = 'super-duper-secret-key-that-no-one-will-know-noderet-neder'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{db_user}:{password}@{host}:{port}/{db_name}'
     db.init_app(app)

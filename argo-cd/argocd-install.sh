@@ -12,7 +12,9 @@ rm argocd-linux-amd64
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 
 #extracting the argo cd user password
-argocd admin initial-password -n argocd
+# Using command substitution to capture the output
+password=$(argocd admin initial-password -n argocd)
+echo "Initial Argo CD admin password: $password"
 
 #port-forwarding to open the UI
 kubectl port-forward svc/argocd-server -n argocd 8080:443

@@ -24,7 +24,7 @@ jobs:
     - name: Build and Push Docker Image
       run: |
         docker build -t noabt/myapp:v.${{ github.run_number }} .
-        docker push noabt/myapp:v${{ github.run_number }}
+        docker push noabt/myapp:v.${{ github.run_number }}
 
 
 

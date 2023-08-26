@@ -27,7 +27,7 @@ services:
        MYSQL_ROOT_PASSWORD: 'noabt2410'
 
   database:
-    image: mysql:v0.0
+    image: mysql:latest
     networks:
       my_custom_network:
         ipv4_address: 172.211.1.3

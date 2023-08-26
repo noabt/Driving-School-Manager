@@ -21,8 +21,6 @@ jobs:
 
       - name: Run Local Test
         run: |
-          #create mysql image
-          docker build -t mysql:v0.0 ./DB
           # Run Docker Compose locally
           docker-compose up -d
 

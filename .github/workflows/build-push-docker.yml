@@ -10,11 +10,11 @@ on:
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Check Out Repository
       uses: actions/checkout@v2
-      
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v1
       with:
@@ -24,20 +24,21 @@ jobs:
     - name: Get the latest tag
       id: get_latest_tag
       run: |
-        latest_tag=$(git tag -l --sort=-v:refname | head -n 1)
-        if [ -z "$latest_tag" ]; then
+        tags=$(git tag -l "v*" --sort=-v:refname)
+        if [ -z "$tags" ]; then
           latest_tag="v0.0"
         else
-          latest_tag_without_v=${latest_tag#v}
-          latest_version_number=$(echo "$latest_tag_without_v" | awk -F. '{$NF=$NF+1;}1')
-          latest_tag="v$latest_version_number"
+          last_tag=$(echo "$tags" | head -n 1)
+          last_index=${last_tag#v}
+          latest_tag="v$(expr $last_index + 1)"
         fi
         echo "TAG=$latest_tag" >> $GITHUB_ENV
-      
+
     - name: Build and Push Docker Image
       run: |
         docker build -t noabt/myapp:${{ env.TAG }} .
         docker push noabt/myapp:${{ env.TAG }}
+
 
 
 

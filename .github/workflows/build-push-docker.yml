@@ -21,23 +21,11 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Get the latest tag
-      id: get_latest_tag
-      run: |
-        tags=$(git tag -l "v*" --sort=-v:refname)
-        if [ -z "$tags" ]; then
-          latest_tag="v0.0"
-        else
-          last_tag=$(echo "$tags" | head -n 1)
-          last_index=${last_tag#v}
-          latest_tag="v$(expr $last_index + 1)"
-        fi
-        echo "TAG=$latest_tag" >> $GITHUB_ENV
-
     - name: Build and Push Docker Image
       run: |
-        docker build -t noabt/myapp:${{ env.TAG }} .
-        docker push noabt/myapp:${{ env.TAG }}
+        docker build -t noabt/myapp:v.${{ github.run_number }} .
+        docker push noabt/myapp:v${{ github.run_number }}
+
 
 
 

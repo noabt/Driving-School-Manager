@@ -1,0 +1,38 @@
+name: Test and Approve Pull Request
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'website/**'
+    
+
+jobs:
+  test-and-approve:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check Out Repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run Tests
+      run: |
+        pytest tests/
+        
+    - name: Approve Pull Request
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        message: "Tests passed, this pull request is ready to merge!"

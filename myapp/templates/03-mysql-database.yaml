@@ -30,6 +30,11 @@ spec:
         - name: {{ .Values.mysql.configmapName }}
           mountPath: /docker-entrypoint-initdb.d/
           readOnly: true
+      volumes:
+      - name: mysql-init-config
+        configMap:
+          name: {{ .Values.mysql.configmapName }}
+    
   volumeClaimTemplates:
   - metadata:
       name: mysql-persistent-storage
@@ -38,13 +43,7 @@ spec:
       resources:
         requests:
           storage: 5Gi
-  - metadata:
-      name: mysql-init-config  
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 1Mi
+  
 
 ---
 

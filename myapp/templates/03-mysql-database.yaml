@@ -28,7 +28,7 @@ spec:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
         - name: {{ .Values.mysql.configmapName }}
-          mountPath: /docker-entrypoint-initdb.d
+          mountPath: /docker-entrypoint-initdb.d/
           readOnly: true
   volumeClaimTemplates:
   - metadata:

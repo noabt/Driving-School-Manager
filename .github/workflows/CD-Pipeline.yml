@@ -1,0 +1,52 @@
+name: Deploy Infrastructure and Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+
+    - name: Install kubectl
+      run: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+
+    - name: Configure kubectl
+      run: |
+        echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig.yaml
+        mkdir -p ~/.kube
+        mv kubeconfig.yaml ~/.kube/config
+
+    - name: Install Argo CD CLI
+      run: |
+        curl -LO https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        chmod +x argocd-linux-amd64
+        sudo mv argocd-linux-amd64 /usr/local/bin/argocd
+
+    - name: Argo CD Application Sync
+      run: |
+        # In real life the password will be chanaged and permanent
+        ARGOCD_PASSWORD=${{ argocd admin initial-password -n argocd }}
+        argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
+        kubectl apply -f application.yaml
+        argocd app sync dsm --wait
+
+    - name: Cleanup
+      run: terraform destroy -auto-approve

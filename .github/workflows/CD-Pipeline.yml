@@ -1,6 +1,7 @@
 name: Deploy Infrastructure and Application
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -43,7 +44,7 @@ jobs:
     - name: Argo CD Application Sync
       run: |
         # In real life the password will be chanaged and permanent
-        ARGOCD_PASSWORD=${{ argocd admin initial-password -n argocd }}
+        ARGOCD_PASSWORD=$(argocd admin initial-password -n argocd)
         argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
         kubectl apply -f application.yaml
         argocd app sync dsm --wait

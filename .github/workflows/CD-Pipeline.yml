@@ -1,5 +1,4 @@
 name: Deploy Infrastructure and Application
-
 on:
   workflow_dispatch:
   push:
@@ -24,13 +23,11 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1  
 
-    - name: Terraform Init
+    - name: Provision EKS cluster
       run: |
         cd my-infrastructure
         terraform init
-
-    - name: Terraform Apply
-      run: terraform apply -auto-approve
+        terraform apply -auto-approve
 
     - name: Install kubectl
       run: |
@@ -56,4 +53,11 @@ jobs:
         argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
         kubectl apply -f argo-cd/application.yaml
         argocd app sync dsm --wait
+
+    - name: Destroy Terraform Infrastructure
+      run: |
+        cd my-infrastructure
+        terraform destroy -auto-approve
+
+        
 

@@ -17,6 +17,19 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
 
+    - name: Install AWS CLI
+      run: |
+        curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+      working-directory: /tmp
+
+    - name: Configure AWS Credentials
+      run: |
+        echo '[default]' >> ~/.aws/credentials
+        echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+        echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+
     - name: Terraform Init
       run: terraform init
 
@@ -28,12 +41,10 @@ jobs:
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         chmod +x kubectl
         sudo mv kubectl /usr/local/bin/
-
+        
     - name: Configure kubectl
-      run: |
-        echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig.yaml
-        mkdir -p ~/.kube
-        mv kubeconfig.yaml ~/.kube/config
+      # can use also var or secret so it will be easy to change
+      run: aws eks --region us-east-1 update-kubeconfig --name dsm-dev-eks
 
     - name: Install Argo CD CLI
       run: |
@@ -43,11 +54,9 @@ jobs:
 
     - name: Argo CD Application Sync
       run: |
-        # In real life the password will be chanaged and permanent
+        # In real life the password will be changed and permanent
         ARGOCD_PASSWORD=$(argocd admin initial-password -n argocd)
         argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
         kubectl apply -f application.yaml
         argocd app sync dsm --wait
 
-    - name: Cleanup
-      run: terraform destroy -auto-approve

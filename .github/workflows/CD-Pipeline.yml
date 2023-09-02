@@ -17,14 +17,17 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
       
-    - name: Configure AWS Credentials
-      run: |
-        echo '[default]' >> ~/.aws/credentials
-        echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-        echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  
 
     - name: Terraform Init
-      run: terraform init
+      run: |
+        cd my-infrastructure
+        terraform init
 
     - name: Terraform Apply
       run: terraform apply -auto-approve
@@ -47,9 +50,10 @@ jobs:
 
     - name: Argo CD Application Sync
       run: |
+        cd ..
         # In real life the password will be changed and permanent
         ARGOCD_PASSWORD=$(argocd admin initial-password -n argocd)
         argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
-        kubectl apply -f application.yaml
+        kubectl apply -f argo-cd/application.yaml
         argocd app sync dsm --wait
 

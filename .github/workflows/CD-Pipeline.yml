@@ -46,10 +46,14 @@ jobs:
         sudo mv argocd-linux-amd64 /usr/local/bin/argocd
 
     - name: Argo CD Application Sync
+      env:
+        ARGOCD_USERNAME: ${{ secrets.ARGOCD_USERNAME }}
+        ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
+        ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       run: |
         # In real life the password will be changed and permanent
         ARGOCD_PASSWORD=$(argocd admin initial-password -n argocd)
-        argocd login --insecure --grpc-web --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD $ARGOCD_SERVER
+        argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
         kubectl apply -f argo-cd/application.yaml
         argocd app sync dsm --wait
 

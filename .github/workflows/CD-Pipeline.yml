@@ -1,10 +1,9 @@
 name: Deploy Infrastructure and Application
-
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  #push:
+  #branches:
+  #- main
 
 jobs:
   deploy:
@@ -16,24 +15,29 @@ jobs:
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
+      
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  
 
-    - name: Terraform Init
-      run: terraform init
-
-    - name: Terraform Apply
-      run: terraform apply -auto-approve
+    - name: Provision EKS cluster
+      run: |
+        cd my-infrastructure
+        terraform init
+        terraform apply -auto-approve -lock=false
 
     - name: Install kubectl
       run: |
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         chmod +x kubectl
         sudo mv kubectl /usr/local/bin/
-
+        
     - name: Configure kubectl
-      run: |
-        echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig.yaml
-        mkdir -p ~/.kube
-        mv kubeconfig.yaml ~/.kube/config
+      # can use also var or secret so it will be easy to change
+      run: aws eks --region us-east-1 update-kubeconfig --name dsm-dev-eks
 
     - name: Install Argo CD CLI
       run: |
@@ -43,11 +47,14 @@ jobs:
 
     - name: Argo CD Application Sync
       run: |
-        # In real life the password will be chanaged and permanent
-        ARGOCD_PASSWORD=$(argocd admin initial-password -n argocd)
-        argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
-        kubectl apply -f application.yaml
+        kubectl config set-context --current --namespace=argocd
+        kubectl apply -f argo-cd/application.yaml
         argocd app sync dsm --wait
 
-    - name: Cleanup
-      run: terraform destroy -auto-approve
+    - name: Destroy Terraform Infrastructure
+      run: |
+        cd my-infrastructure
+        terraform destroy -auto-approve
+
+        
+

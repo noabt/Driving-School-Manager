@@ -52,8 +52,9 @@ jobs:
         ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       run: |
         # In real life the password will be changed and permanent
+        kubectl config set-context --current --namespace=argocd
         ARGOCD_PASSWORD=$(argocd admin initial-password -n argocd)
-        argocd login --insecure --grpc-web --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" "$ARGOCD_SERVER"
+        argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD --insecure
         kubectl apply -f argo-cd/application.yaml
         argocd app sync dsm --wait
 

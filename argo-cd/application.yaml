@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: dsm
 spec:
+  syncPolicy:
+    automated:
+      selfHeal: true
   destination:
     name: ''
     namespace: default

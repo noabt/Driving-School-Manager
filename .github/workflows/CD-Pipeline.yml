@@ -1,4 +1,4 @@
-name: Deploy Infrastructure and Application
+name: CD Pipeline 
 on:
   workflow_dispatch:
   #push:
@@ -12,22 +12,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
-      
-    - name: Set up AWS credentials
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1  
-
-    - name: Provision EKS cluster
-      run: |
-        cd my-infrastructure
-        terraform init
-        terraform apply -auto-approve -lock=false
 
     - name: Install kubectl
       run: |
@@ -49,12 +33,9 @@ jobs:
       run: |
         kubectl config set-context --current --namespace=argocd
         kubectl apply -f argo-cd/application.yaml
+        # can add monitoring applictions...
         argocd app sync dsm --wait
 
-    - name: Destroy Terraform Infrastructure
-      run: |
-        cd my-infrastructure
-        terraform destroy -auto-approve
-
+   
         
 

@@ -48,3 +48,9 @@ jobs:
           docker build -t noabt/myapp:${BRANCH_NAME}-${COMMIT_SHORT_SHA} .
           docker push noabt/myapp:${BRANCH_NAME}-${COMMIT_SHORT_SHA}
 
+      - name: Update Helm Chart Values
+        run: |
+          # Assuming you have your Helm chart values in a file named "values.yaml"
+          sed -i "s/tag:.*/tag: \"${BRANCH_NAME}-${COMMIT_SHORT_SHA}\"/" ./myapp/values.yaml
+
+

@@ -40,14 +40,17 @@ jobs:
             DOCKER_TAG=${BRANCH_NAME}-${COMMIT_SHORT_SHA}
             docker build -t noabt/myapp:${DOCKER_TAG} .
             docker push noabt/myapp:${DOCKER_TAG}
+      
+      - name: Update values.yaml
+        run: yq eval '.app.image.tag = "${BRANCH_NAME}-${COMMIT_SHORT_SHA}"' -i myapp/values.yaml
         
-      - name: Update Helm Chart Values
-        run: |
-            # Update the tag in your Helm chart values.yaml file
-            sed -i "s/tag:.*/tag: \"${DOCKER_TAG}\"/" myapp/values.yaml
-            git config user.email "noabt123@gmail.com"
-            git config user.name "noabt"
-            git add myapp/values.yaml
-            git commit -m "Update image tag in Helm chart values"
-            git push origin main  # Replace 'main' with your branch name
+      - name: stage changed files
+        run: git add .
+        
+      - name: commit changed files
+        run: git commit -m "Auto updating values.yaml"
+      - name: fetch from master
+        run: git fetch origin master
+      - name: push code to master
+        run: git push origin HEAD:master
         

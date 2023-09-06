@@ -35,19 +35,14 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          if [ ${{ success() }} = true ]; then
             BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
             COMMIT_SHORT_SHA=$(git rev-parse --short=7 HEAD)
             DOCKER_TAG=${BRANCH_NAME}-${COMMIT_SHORT_SHA}
             docker build -t noabt/myapp:${DOCKER_TAG} .
             docker push noabt/myapp:${DOCKER_TAG}
-          else
-            echo "Tests failed. Skipping Docker image build."
-          fi
-
+        
       - name: Update Helm Chart Values
         run: |
-          if [ ${{ success() }} = true ]; then
             # Update the tag in your Helm chart values.yaml file
             sed -i "s/tag:.*/tag: \"${DOCKER_TAG}\"/" myapp/values.yaml
             git config user.email "noabt123@gmail.com"
@@ -55,6 +50,4 @@ jobs:
             git add myapp/values.yaml
             git commit -m "Update image tag in Helm chart values"
             git push origin main  # Replace 'main' with your branch name
-          else
-            echo "Tests failed. Skipping Helm chart values update."
-          fi
+        

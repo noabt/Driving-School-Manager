@@ -53,4 +53,12 @@ jobs:
           # Assuming you have your Helm chart values in a file named "values.yaml"
           sed -i "s/tag:.*/tag: \"${BRANCH_NAME}-${COMMIT_SHORT_SHA}\"/" ./myapp/values.yaml
 
+      - name: Commit and Push Helm Chart Changes
+        run: |
+          git config user.email "noabt123@gmail.com"
+          git config user.name "noabt"
+          git add ./myapp/values.yaml
+          git commit -m "Update image tag in Helm chart values"
+          git push
+
 

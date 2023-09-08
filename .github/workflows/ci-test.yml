@@ -45,7 +45,7 @@ jobs:
         run: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           COMMIT_SHORT_SHA=$(git rev-parse --short HEAD)
-          jq --arg bn "${BRANCH_NAME}" --arg sha "${COMMIT_SHORT_SHA}" '.app.image.tag = ($bn + "-" + $sha)' myapp/values.yaml > myapp/values_tmp.yaml && mv myapp/values_tmp.yaml myapp/values.yaml
+          yq eval '.app.image.tag = env(BRANCH_NAME) + "-" + env(COMMIT_SHORT_SHA)' -i myapp/values.yaml
 
       - name: set git config
         run: |

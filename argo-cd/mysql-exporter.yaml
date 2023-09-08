@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mysql-exporter
+spec:
+  syncPolicy:
+    automated:
+      selfHeal: true
+  destination:
+    name: ''
+    namespace: default
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: prometheus-mysql-exporter
+    repoURL: 'https://github.com/noabt/Driving-School-Manager.git'
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  sources: []
+  project: default

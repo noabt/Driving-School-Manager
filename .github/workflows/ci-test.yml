@@ -42,7 +42,7 @@ jobs:
             docker push noabt/myapp:${DOCKER_TAG}
       
       - name: Update values.yaml
-        run: yq eval '.app.image.tag = "${BRANCH_NAME}-${COMMIT_SHORT_SHA}"' -i myapp/values.yaml
+        run: yq eval '.app.image.tag = ${BRANCH_NAME}-${COMMIT_SHORT_SHA}' -i myapp/values.yaml
 
       - name: set git config
         run: |

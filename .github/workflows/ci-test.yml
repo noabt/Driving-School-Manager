@@ -45,7 +45,7 @@ jobs:
         run: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           COMMIT_SHORT_SHA=$(git rev-parse --short=7 HEAD)
-          yq eval '.app.image.tag=$(git rev-parse --abbrev-ref HEAD)-$(git rev-parse --short=7 HEAD)' -i myapp/values.yaml
+          yq eval '.app.image.tag = "$(git rev-parse --abbrev-ref HEAD)-$(git rev-parse --short=7 HEAD)"' -i myapp/values.yaml
 
       - name: set git config
         run: |

@@ -43,6 +43,11 @@ jobs:
       
       - name: Update values.yaml
         run: yq eval '.app.image.tag = "${BRANCH_NAME}-${COMMIT_SHORT_SHA}"' -i myapp/values.yaml
+
+      - name: set git config
+        run: |
+          git config --global user.email "noabt123@gmail.com"
+          git config --global user.name "noa"
         
       - name: stage changed files
         run: git add .
@@ -51,7 +56,7 @@ jobs:
         run: git commit -m "Auto updating values.yaml"
         
       - name: fetch from master
-        run: git fetch origin main
+        run: git pull origin main
         
       - name: push code to master
         run: git push origin HEAD:main

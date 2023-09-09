@@ -52,7 +52,7 @@ jobs:
           git pull origin main
           git push origin HEAD:main
 
-      - name: Test the connection between the new app image and the db
+      - name: run docker compose for connection test
         run: |
            docker-compose up -d
            sleep 20

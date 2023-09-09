@@ -40,7 +40,7 @@ jobs:
           export BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           export COMMIT_SHORT_SHA=$(git rev-parse --short=7 HEAD)
           docker build -t noabt/myapp:${BRANCH_NAME}-${COMMIT_SHORT_SHA} .
-          yq eval '.services.web.image = "docker.io/noabt/myapp:" + env(BRANCH_NAME) + "-" + env(COMMIT_SHORT_SHA)' -i docker-compose.yaml
+          yq eval '.services.web.image = "noabt/myapp:" + env(BRANCH_NAME) + "-" + env(COMMIT_SHORT_SHA)' -i docker-compose.yaml
 
       - name: set git config
         run: |

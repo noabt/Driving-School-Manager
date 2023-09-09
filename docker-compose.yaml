@@ -7,7 +7,7 @@ networks:
 version: '3'
 services:
   web:
-    image: docker.io/noabt/myapp:main-e308363
+    image: noabt/myapp:main-c6b5b4c
     ports:
       - "3000:3000"
     expose:

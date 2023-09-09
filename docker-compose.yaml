@@ -7,7 +7,7 @@ networks:
 version: '3'
 services:
   web:
-    image: noabt/myapp:main-65289e3
+    image: noabt/myapp:main-840bc42
     ports:
       - "3000:3000"
     expose:

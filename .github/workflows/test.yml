@@ -15,7 +15,7 @@ jobs:
         run: |
           docker build -t myapp-image:latest .
         
-      - name: Run MySQL Container
+      - name: Run docker-compose
         run: |
           docker-compose build --build-arg CUSTOM_IMAGE_NAME=myapp-image:latest
           CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d

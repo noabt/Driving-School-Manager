@@ -1,4 +1,4 @@
-name: Docker Workflow
+name: Docker-compose test
 
 on:
   workflow_dispatch:
@@ -6,10 +6,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
-    env:
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -19,28 +16,20 @@ jobs:
           docker build -t myapp-image:latest .
         
       - name: Run MySQL Container
-        run: |
-          docker run -d --name mysql-container \
-            -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-            -p 3306:3306 \
-            mysql:latest
-
+        run: CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d
+          
       - name: Wait for mysql Container to Start
         run: sleep 20
         
-      - name: Run App Container
-        run: |
-          docker run -d --name myapp-container \
-            --link=mysql-container:mysql \
-            -p 3000:3000 \
-            myapp-image:latest
+      - name: Run docker-compose
+        run: CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d
 
       - name: Wait for app Container to Start
         run: sleep 20
 
       - name: Check Response Code
         run: |
-          APP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://myapp-container:3000)
+          APP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
           if [ "$APP_RESPONSE" -eq 302 ]; then
             echo "App is running and returning a 302 response code."
           else

@@ -8,7 +8,9 @@ networks:
 version: '3'   
 services:
   web:
-    image: docker.io/noabt/myapp:final
+    environment:
+      - CUSTOM_IMAGE=${CUSTOM_IMAGE_NAME:-default-docker.io/noabt/myapp:final}
+    image: ${CUSTOM_IMAGE}
     ports:
       - "3000:3000"
     expose:

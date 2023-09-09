@@ -16,13 +16,17 @@ jobs:
           docker build -t myapp-image:latest .
         
       - name: Run MySQL Container
-        run: CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d
+        run: |
+          docker-compose build --build-arg CUSTOM_IMAGE_NAME=myapp-image:latest
+          CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d
           
       - name: Wait for mysql Container to Start
         run: sleep 20
         
       - name: Run docker-compose
-        run: CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d
+        run: |
+          docker-compose build --build-arg CUSTOM_IMAGE_NAME=myapp-image:latest
+          CUSTOM_IMAGE_NAME=myapp-image:latest docker-compose up -d
 
       - name: Wait for app Container to Start
         run: sleep 20

@@ -1,0 +1,49 @@
+name: Docker Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Build Docker Image
+        run: |
+          docker build -t myapp-image:latest .
+        
+      - name: Run MySQL Container
+        run: |
+          docker run -d --name mysql-container \
+            -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
+            -p 3306:3306 \
+            mysql:latest
+
+      - name: Wait for mysql Container to Start
+        run: sleep 20
+        
+      - name: Run App Container
+        run: |
+          docker run -d --name myapp-container \
+            --link=mysql-container:mysql \
+            -p 3000:3000 \
+            myapp-image:latest
+
+      - name: Wait for app Container to Start
+        run: sleep 20
+
+      - name: Check Response Code
+        run: |
+          APP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://myapp-container:3000)
+          if [ "$APP_RESPONSE" -eq 302 ]; then
+            echo "App is running and returning a 302 response code."
+          else
+            echo "Connection to the app failed. Response code: $APP_RESPONSE"
+            exit 1
+          fi

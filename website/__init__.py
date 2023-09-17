@@ -3,11 +3,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import os
 from os import path
+from website.utils import setting_statsd, StatsdMiddleware
 
 app = Flask(__name__)
 db = SQLAlchemy()
 
 def create_app():
+
+    # Setting statsd host and port
+    setting_statsd()
+    # Add statsd middleware to track each request and send statsd UDP request
+    app.wsgi_app = StatsdMiddleware(app.wsgi_app, "flask-monitoring")
+
     port = os.getenv('PORT', '3306')
     host = os.getenv('HOST', '172.17.0.2')
     password = os.getenv('PASSWORD', 'noabt2410')

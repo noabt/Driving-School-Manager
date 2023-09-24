@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prometheus-grafana-prometheus-statsd-exporter
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: statsd-exporter
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prometheus-statsd-exporter
+    app.kubernetes.io/version: v0.24.0  # Specify the version
+    helm.sh/chart: prometheus-statsd-exporter-0.10.0  # Specify the chart version
+    release: prometheus-grafana
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: statsd-exporter  # Adjust this label to match the statsd-exporter's labels
+  endpoints:
+    - port: statsd-udp  # Specify the port used by the statsd-exporter
+      scheme: http  # Adjust the scheme if needed (e.g., https for HTTPS endpoints)

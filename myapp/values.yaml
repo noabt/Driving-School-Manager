@@ -8,7 +8,7 @@ app:
     repository: docker.io/noabt/myapp
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "main-023c5bd"
+    tag: "main-e92967e"
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""

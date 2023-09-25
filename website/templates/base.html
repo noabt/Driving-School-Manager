@@ -24,7 +24,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       {% if user.is_authenticated %}
-        <h4 style="color: white;" class="nav-item nav-link" id="hello">Hello {% print(current_user.first_name) %} !</h4>
+        <h4 style="color: white;" class="nav-item nav-link" id="hello">Welcome {% print(current_user.first_name) %} !</h4>
       {% endif %}
       <div class="collapse navbar-collapse" id="navbar">
         <div class="navbar-nav">
